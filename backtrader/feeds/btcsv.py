@@ -54,11 +54,6 @@ class BacktraderCSVData(feed.CSVDataBase):
         self.lines.close[0] = float(next(itoken))
         self.lines.volume[0] = float(next(itoken))
         self.lines.openinterest[0] = float(next(itoken))
-        # self.lines.cumulativeopen[0] = float(next(itoken))
-        # self.lines.cumulativehigh[0] = float(next(itoken))
-        # self.lines.cumulativelow[0] = float(next(itoken))
-        # self.lines.cumulativeclose[0] = float(next(itoken))
-        # self.lines.cumulativevolume[0] = float(next(itoken))
 
         return True
 

@@ -36,7 +36,7 @@ from .resamplerfilter import Replayer, Resampler
 from .tradingcal import PandasMarketCalendar
 
 
-class MetaAbstractDataBase(dataseries.OHLCDateTime.__class__):
+class MetaAbstractDataBase(dataseries.CumulativeOHLC.__class__):
     _indcol = dict()
 
     def __init__(cls, name, bases, dct):
