@@ -111,19 +111,31 @@ class TestStrategy(bt.Strategy):
         cumsum_vol = self.data.cumulativevolume[0]
         cumsum_high = self.data.cumulativehigh[0]
         cumsum_low = self.data.cumulativelow[0]
+        cumsum_open = self.data.cumulativeopen[0]
+        cumsum_close = self.data.cumulativeclose[0]
+
         close = self.data.close[0]
+        open = self.data.open[0]
+        high = self.data.high[0]
+        low = self.data.low[0]
         datetime = self.data.datetime.datetime()
 
         print(
             f"{datetime} - Close: {close}, Cumulative Volume: {cumsum_vol}, Cumulative"
             f" High: {cumsum_high}, Cumulative Low: {cumsum_low}"
+            f" Cumulative Open: {cumsum_open}, Cumulative Close: {cumsum_close}"
         )
 
-        # assert pd.notna(cumsum_vol)
-        # assert pd.notna(cumsum_high)
-        # assert pd.notna(cumsum_low)
-        # assert pd.notna(close)
-        # assert pd.notna(datetime)
+        assert pd.notna(cumsum_vol)
+        assert pd.notna(cumsum_high)
+        assert pd.notna(cumsum_low)
+        assert pd.notna(cumsum_open)
+        assert pd.notna(cumsum_close)
+        assert pd.notna(open)
+        assert pd.notna(high)
+        assert pd.notna(low)
+        assert pd.notna(close)
+        assert pd.notna(datetime)
 
 
 def test_cumulative_pandas_data():

@@ -175,6 +175,7 @@ class PandasData(feed.DataBase):
 
         # these "colnames" can be strings or numeric types
         colnames = list(self.p.dataname.columns.values)
+        print(colnames)
         if self.p.datetime is None:
             # datetime is expected as index col and hence not returned
             pass
@@ -210,6 +211,7 @@ class PandasData(feed.DataBase):
             else:
                 # all other cases -- used given index
                 self._colmapping[datafield] = defmapping
+        print(f"colmapping: {self._colmapping}")
 
     def start(self):
         super(PandasData, self).start()

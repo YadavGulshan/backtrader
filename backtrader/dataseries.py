@@ -244,6 +244,11 @@ class _Bar(AutoOrderedDict):
         self.volume = 0.0
         self.openinterest = 0.0
         self.datetime = self.MAXDATE if maxdate else None
+        self.cumulativeclose = float("NaN")
+        self.cumulativelow = float("inf")
+        self.cumulativehigh = float("-inf")
+        self.cumulativeopen = float("NaN")
+        self.cumulativevolume = 0.0
 
     def isopen(self):
         """Returns if a bar has already been updated
@@ -272,6 +277,14 @@ class _Bar(AutoOrderedDict):
 
         self.volume += data.volume[0]
         self.openinterest = data.openinterest[0]
+        try:
+            self.cumulativehigh = data.cumulativehigh[0]
+            self.cumulativelow = data.cumulativelow[0]
+            self.cumulativeclose = data.cumulativeclose[0]
+            self.cumulativeopen = data.cumulativeopen[0]
+            self.cumulativevolume = data.cumulativevolume[0]
+        except Exception as e:
+            print(f"_Bar.bupdate: {e}")
 
         o = self.open
         if reopen or not o == o:

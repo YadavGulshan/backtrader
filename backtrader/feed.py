@@ -807,6 +807,7 @@ class DataClone(AbstractDataBase):
 
             for line, dline in zip(self.lines, self.data.lines):
                 line[0] = dline[0]
+                # print(f"Preloading: {line[0]}")
 
             return True
 
@@ -819,6 +820,7 @@ class DataClone(AbstractDataBase):
 
         for line, dline in zip(self.lines, self.data.lines):
             line[0] = dline[0]
+            # print(f"Loading: {line[0]}")
 
         return True
 
