@@ -109,7 +109,22 @@ class OHLC(DataSeries):
 
 
 class OHLCDateTime(OHLC):
-    lines = (('datetime'),)
+    lines = ('datetime',)
+
+
+class CumulativeOHLC(OHLCDateTime):
+    lines = ('cumulative_close', 'cumulative_low', 'cumulative_high',
+             'cumulative_open', 'cumulative_volume', 'cumulative_openinterest')
+
+
+class ExtendedOHLC(OHLCDateTime):
+    lines = (
+        'yesterday', 'day_high', 'day_low', 'week_high', 'week_low', 'month_high', 'month_low', 'year_high', 'year_low',
+        'all_time_high', 'all_time_low')
+
+
+class ExtendedCumulativeOHLC(CumulativeOHLC, ExtendedOHLC):
+    pass
 
 
 class SimpleFilterWrapper(object):
@@ -125,6 +140,7 @@ class SimpleFilterWrapper(object):
     The wrapper takes the return value and executes the bar removal
     if needed be
     '''
+
     def __init__(self, data, ffilter, *args, **kwargs):
         if inspect.isclass(ffilter):
             ffilter = ffilter(data, *args, **kwargs)
