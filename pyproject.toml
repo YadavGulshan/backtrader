@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "backtrader"
+version = "0.1.0"
+description = ""
+authors = ["Daniel Rodriguez <danjrod@gmail.com>", "yadavgulshan <yadavgulshan542@gmail.com>"]
+readme = "README.rst"
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.13"
+pytest = "^8.2.2"
+numpy = "^1.26.4"
+ta-lib = "^0.4.31"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.2.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+filterwarnings = [
+    "ignore:cannot collect test class 'TestStrategy' because it has a __init__ constructor:pytest.PytestCollectionWarning",
+    "ignore:cannot collect test class 'TestFrompackages' because it has a __init__ constructor:pytest.PytestCollectionWarning",
+]
