@@ -1,0 +1,25 @@
+[flake8]
+max-line-length = 88
+# way too big, but we have too much refactoring
+max-complexity = 20
+
+select =
+  B
+  C
+  E
+  F
+  W
+  T4
+  B9
+
+# line-to-long: E501
+ignore =
+  E203
+  E266
+  E501
+  W503
+  F403
+  F401
+
+per-file-ignores =
+  sqlitis/codegen/generator.py:C901

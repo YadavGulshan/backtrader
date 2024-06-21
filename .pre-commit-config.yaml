@@ -1,0 +1,73 @@
+default_language_version:
+  python: python3.11
+minimum_pre_commit_version: 3.3.3
+exclude: |
+  (?x)^(
+    .coverage
+    .pytest*
+    .venv
+    .idea
+    build
+    dist
+    .git
+    _build
+    .mypy_cache
+    _build
+  .idea/dataSources.xml
+  )$
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: check-added-large-files
+        stages: ["pre-push"]
+        args: ["--maxkb=1000"]
+      - id: detect-private-key
+        stages: ["pre-push"]
+      - id: detect-aws-credentials
+        stages: ["pre-push"]
+      - id: forbid-submodules
+        stages: ["pre-push"]
+      - id: end-of-file-fixer
+        stages: ["pre-commit"]
+      - id: trailing-whitespace
+        stages: ["pre-commit"]
+      - id: mixed-line-ending
+        stages: ["pre-commit"]
+
+  - repo: https://github.com/PyCQA/autoflake
+    rev: v2.2.0
+    hooks:
+      - id: autoflake
+        stages: ["pre-commit", "pre-push"]
+        args:
+          [
+            "--expand-star-imports",
+            "--in-place",
+            "--ignore-init-module-imports",
+            "--recursive",
+            "--remove-all-unused-imports",
+            "--remove-duplicate-keys",
+            "--remove-unused-variables",
+          ]
+
+  - repo: https://github.com/psf/black
+    rev: 23.7.0
+    hooks:
+      - id: black
+        stages: ["pre-commit", "pre-push"]
+        args: ["--line-length=88", '--include=.*\.pyi?$', "--preview"]
+
+  - repo: https://github.com/PyCQA/isort
+    rev: 5.12.0
+    hooks:
+      - id: isort
+        stages: ["pre-commit", "pre-push"]
+        args: ["--profile", "black", "--filter-files"]
+
+  - repo: https://github.com/pycqa/flake8
+    rev: 3.8.3
+    hooks:
+      - id: flake8
+        stages: ["pre-commit", "pre-push"]
