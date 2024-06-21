@@ -18,24 +18,34 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ###############################################################################
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 import datetime as _datetime
-from datetime import datetime
 import inspect
+from datetime import datetime
 
-from .utils.py3 import range, with_metaclass
 from .lineseries import LineSeries
 from .utils import AutoOrderedDict, OrderedDict, date2num
+from .utils.py3 import range
 
 
 class TimeFrame(object):
-    (Ticks, MicroSeconds, Seconds, Minutes,
-     Days, Weeks, Months, Years, NoTimeFrame) = range(1, 10)
+    (Ticks, MicroSeconds, Seconds, Minutes, Days, Weeks, Months, Years, NoTimeFrame) = (
+        range(1, 10)
+    )
 
-    Names = ['', 'Ticks', 'MicroSeconds', 'Seconds', 'Minutes',
-             'Days', 'Weeks', 'Months', 'Years', 'NoTimeFrame']
+    Names = [
+        "",
+        "Ticks",
+        "MicroSeconds",
+        "Seconds",
+        "Minutes",
+        "Days",
+        "Weeks",
+        "Months",
+        "Years",
+        "NoTimeFrame",
+    ]
 
     names = Names  # support old naming convention
 
@@ -60,60 +70,118 @@ class TimeFrame(object):
 class DataSeries(LineSeries):
     plotinfo = dict(plot=True, plotind=True, plotylimited=True)
 
-    _name = ''
+    _name = ""
     _compression = 1
     _timeframe = TimeFrame.Days
 
-    Close, Low, High, Open, Volume, OpenInterest, DateTime = range(7)
+    (
+        Close,
+        Low,
+        High,
+        Open,
+        Volume,
+        OpenInterest,
+        DateTime,
+        CumulativeClose,
+        CumulativeLow,
+        CumulativeHigh,
+        CumulativeOpen,
+        CumulativeVolume,
+    ) = range(12)
 
-    LineOrder = [DateTime, Open, High, Low, Close, Volume, OpenInterest]
+    LineOrder = [
+        DateTime,
+        Open,
+        High,
+        Low,
+        Close,
+        Volume,
+        OpenInterest,
+        CumulativeClose,
+        CumulativeOpen,
+        CumulativeHigh,
+        CumulativeLow,
+        CumulativeVolume,
+    ]
 
     def getwriterheaders(self):
-        headers = [self._name, 'len']
+        headers = [self._name, "len"]
 
         for lo in self.LineOrder:
             headers.append(self._getlinealias(lo))
 
-        morelines = self.getlinealiases()[len(self.LineOrder):]
+        morelines = self.getlinealiases()[len(self.LineOrder) :]
         headers.extend(morelines)
 
         return headers
 
     def getwritervalues(self):
-        l = len(self)
-        values = [self._name, l]
+        length = len(self)
+        values = [self._name, length]
 
-        if l:
+        if length:
             values.append(self.datetime.datetime(0))
             for line in self.LineOrder[1:]:
-                values.append(self.lines[line][0])
+                line_value = self.lines[line][0]
+                values.append(line_value)
             for i in range(len(self.LineOrder), self.lines.size()):
-                values.append(self.lines[i][0])
+                line_value = self.lines[i][0]
+                values.append(line_value)
         else:
-            values.extend([''] * self.lines.size())  # no values yet
+            values.extend([""] * self.lines.size())  # no values yet
 
         return values
 
     def getwriterinfo(self):
         # returns dictionary with information
         info = OrderedDict()
-        info['Name'] = self._name
-        info['Timeframe'] = TimeFrame.TName(self._timeframe)
-        info['Compression'] = self._compression
+        info["Name"] = self._name
+        info["Timeframe"] = TimeFrame.TName(self._timeframe)
+        info["Compression"] = self._compression
 
         return info
 
 
 class OHLC(DataSeries):
-    lines = ('close', 'low', 'high', 'open', 'volume', 'openinterest',)
+    lines = ("close", "low", "high", "open", "volume", "openinterest")
 
 
 class OHLCDateTime(OHLC):
-    lines = (('datetime'),)
+    lines = ("datetime",)
+
+
+class CumulativeOHLC(OHLCDateTime):
+    lines = (
+        "cumulativeclose",
+        "cumulativelow",
+        "cumulativehigh",
+        "cumulativeopen",
+        "cumulativevolume",
+    )
+
+
+class ExtendedOHLC(OHLCDateTime):
+    lines = (
+        "yesterday",
+        "day_high",
+        "day_low",
+        "week_high",
+        "week_low",
+        "month_high",
+        "month_low",
+        "year_high",
+        "year_low",
+        "all_time_high",
+        "all_time_low",
+    )
+
+
+class ExtendedCumulativeOHLC(CumulativeOHLC, ExtendedOHLC):
+    pass
 
 
 class SimpleFilterWrapper(object):
-    '''Wrapper for filters added via .addfilter to turn them
+    """Wrapper for filters added via .addfilter to turn them
     into processors.
 
     Filters are callables which
@@ -124,7 +192,8 @@ class SimpleFilterWrapper(object):
 
     The wrapper takes the return value and executes the bar removal
     if needed be
-    '''
+    """
+
     def __init__(self, data, ffilter, *args, **kwargs):
         if inspect.isclass(ffilter):
             ffilter = ffilter(data, *args, **kwargs)
@@ -144,7 +213,7 @@ class SimpleFilterWrapper(object):
 
 
 class _Bar(AutoOrderedDict):
-    '''
+    """
     This class is a placeholder for the values of the standard lines of a
     DataBase class (from OHLCDateTime)
 
@@ -153,7 +222,8 @@ class _Bar(AutoOrderedDict):
 
     Order of definition is important and must match that of the lines
     definition in DataBase (which directly inherits from OHLCDateTime)
-    '''
+    """
+
     replaying = False
 
     # Without - 1 ... converting back to time will not work
@@ -165,32 +235,37 @@ class _Bar(AutoOrderedDict):
         self.bstart(maxdate=maxdate)
 
     def bstart(self, maxdate=False):
-        '''Initializes a bar to the default not-updated vaues'''
+        """Initializes a bar to the default not-updated vaues"""
         # Order is important: defined in DataSeries/OHLC/OHLCDateTime
-        self.close = float('NaN')
-        self.low = float('inf')
-        self.high = float('-inf')
-        self.open = float('NaN')
+        self.close = float("NaN")
+        self.low = float("inf")
+        self.high = float("-inf")
+        self.open = float("NaN")
         self.volume = 0.0
         self.openinterest = 0.0
         self.datetime = self.MAXDATE if maxdate else None
+        self.cumulativeclose = float("NaN")
+        self.cumulativelow = float("inf")
+        self.cumulativehigh = float("-inf")
+        self.cumulativeopen = float("NaN")
+        self.cumulativevolume = 0.0
 
     def isopen(self):
-        '''Returns if a bar has already been updated
+        """Returns if a bar has already been updated
 
         Uses the fact that NaN is the value which is not equal to itself
         and ``open`` is initialized to NaN
-        '''
+        """
         o = self.open
         return o == o  # False if NaN, True in other cases
 
     def bupdate(self, data, reopen=False):
-        '''Updates a bar with the values from data
+        """Updates a bar with the values from data
 
         Returns True if the update was the 1st on a bar (just opened)
 
         Returns False otherwise
-        '''
+        """
         if reopen:
             self.bstart()
 
@@ -202,6 +277,14 @@ class _Bar(AutoOrderedDict):
 
         self.volume += data.volume[0]
         self.openinterest = data.openinterest[0]
+        try:
+            self.cumulativehigh = data.cumulativehigh[0]
+            self.cumulativelow = data.cumulativelow[0]
+            self.cumulativeclose = data.cumulativeclose[0]
+            self.cumulativeopen = data.cumulativeopen[0]
+            self.cumulativevolume = data.cumulativevolume[0]
+        except Exception as e:
+            print(f"_Bar.bupdate: {e}")
 
         o = self.open
         if reopen or not o == o:

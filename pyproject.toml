@@ -10,9 +10,11 @@ python = ">=3.10,<3.13"
 pytest = "^8.2.2"
 numpy = "^1.26.4"
 ta-lib = "^0.4.31"
+pandas = "^2.2.2"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.2"
+pre-commit = "^3.7.1"
 
 [build-system]
 requires = ["poetry-core"]
