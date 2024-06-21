@@ -18,8 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ###############################################################################
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
+from __future__ import absolute_import, division, print_function, unicode_literals
 
 from datetime import date, datetime, time
 
@@ -28,13 +27,13 @@ from ..utils import date2num
 
 
 class BacktraderCSVData(feed.CSVDataBase):
-    '''
+    """
     Parses a self-defined CSV Data used for testing.
 
     Specific parameters:
 
       - ``dataname``: The filename to parse or a file-like object
-    '''
+    """
 
     def _loadline(self, linetokens):
         itoken = iter(linetokens)
@@ -55,6 +54,11 @@ class BacktraderCSVData(feed.CSVDataBase):
         self.lines.close[0] = float(next(itoken))
         self.lines.volume[0] = float(next(itoken))
         self.lines.openinterest[0] = float(next(itoken))
+        # self.lines.cumulativeopen[0] = float(next(itoken))
+        # self.lines.cumulativehigh[0] = float(next(itoken))
+        # self.lines.cumulativelow[0] = float(next(itoken))
+        # self.lines.cumulativeclose[0] = float(next(itoken))
+        # self.lines.cumulativevolume[0] = float(next(itoken))
 
         return True
 

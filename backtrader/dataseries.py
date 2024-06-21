@@ -74,9 +74,35 @@ class DataSeries(LineSeries):
     _compression = 1
     _timeframe = TimeFrame.Days
 
-    Close, Low, High, Open, Volume, OpenInterest, DateTime = range(7)
+    (
+        Close,
+        Low,
+        High,
+        Open,
+        Volume,
+        OpenInterest,
+        DateTime,
+        CumulativeClose,
+        CumulativeLow,
+        CumulativeHigh,
+        CumulativeOpen,
+        CumulativeVolume,
+    ) = range(12)
 
-    LineOrder = [DateTime, Open, High, Low, Close, Volume, OpenInterest]
+    LineOrder = [
+        DateTime,
+        Open,
+        High,
+        Low,
+        Close,
+        Volume,
+        OpenInterest,
+        CumulativeClose,
+        CumulativeOpen,
+        CumulativeHigh,
+        CumulativeLow,
+        CumulativeVolume,
+    ]
 
     def getwriterheaders(self):
         headers = [self._name, "len"]
@@ -96,9 +122,11 @@ class DataSeries(LineSeries):
         if length:
             values.append(self.datetime.datetime(0))
             for line in self.LineOrder[1:]:
-                values.append(self.lines[line][0])
+                line_value = self.lines[line][0]
+                values.append(line_value)
             for i in range(len(self.LineOrder), self.lines.size()):
-                values.append(self.lines[i][0])
+                line_value = self.lines[i][0]
+                values.append(line_value)
         else:
             values.extend([""] * self.lines.size())  # no values yet
 
@@ -115,28 +143,27 @@ class DataSeries(LineSeries):
 
 
 class OHLC(DataSeries):
-    lines = (
-        "close",
-        "low",
-        "high",
-        "open",
-        "volume",
-        "openinterest",
-    )
+    lines = ("close", "low", "high", "open", "volume", "openinterest")
 
 
 class OHLCDateTime(OHLC):
-    lines = ("datetime",)
+    lines = (
+        "datetime",
+        "cumulativeclose",
+        "cumulativelow",
+        "cumulativehigh",
+        "cumulativeopen",
+        "cumulativevolume",
+    )
 
 
 class CumulativeOHLC(OHLCDateTime):
     lines = (
-        "cumulative_close",
-        "cumulative_low",
-        "cumulative_high",
-        "cumulative_open",
-        "cumulative_volume",
-        "cumulative_openinterest",
+        "cumulativeclose",
+        "cumulativelow",
+        "cumulativehigh",
+        "cumulativeopen",
+        "cumulativevolume",
     )
 
 
