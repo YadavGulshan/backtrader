@@ -147,14 +147,7 @@ class OHLC(DataSeries):
 
 
 class OHLCDateTime(OHLC):
-    lines = (
-        "datetime",
-        "cumulativeclose",
-        "cumulativelow",
-        "cumulativehigh",
-        "cumulativeopen",
-        "cumulativevolume",
-    )
+    lines = ("datetime",)
 
 
 class CumulativeOHLC(OHLCDateTime):
