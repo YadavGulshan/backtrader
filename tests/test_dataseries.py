@@ -54,55 +54,6 @@ data = {
         2.7300,
     ],
     "volume": [100, 200, 150, 300, 250, 400, 350, 300, 450, 500],
-    "cumulativevolume": [100, 300, 450, 750, 1000, 1400, 1750, 2050, 2500, 3000],
-    "cumulativehigh": [
-        0.725,
-        0.740,
-        0.740,
-        0.740,
-        0.740,
-        3.200,
-        3.200,
-        3.200,
-        3.200,
-        3.200,
-    ],
-    "cumulativelow": [
-        0.725,
-        0.715,
-        0.715,
-        0.715,
-        0.715,
-        1.670,
-        1.670,
-        1.670,
-        1.670,
-        1.670,
-    ],
-    "cumulativeopen": [
-        0.725,
-        0.715,
-        0.740,
-        0.7399,
-        0.740,
-        2.650,
-        2.690,
-        2.730,
-        2.700,
-        2.700,
-    ],
-    "cumulativeclose": [
-        0.725,
-        0.740,
-        0.740,
-        0.7399,
-        0.740,
-        2.680,
-        2.740,
-        2.740,
-        2.730,
-        2.730,
-    ],
 }
 
 
@@ -113,6 +64,8 @@ class TestStrategy(bt.Strategy):
         cumsum_low = self.data.cumulativelow[0]
         cumsum_open = self.data.cumulativeopen[0]
         cumsum_close = self.data.cumulativeclose[0]
+        daily_high = self.data.dailyhigh[0]
+        daily_low = self.data.dailylow[0]
 
         close = self.data.close[0]
         open = self.data.open[0]
@@ -124,6 +77,7 @@ class TestStrategy(bt.Strategy):
             f"{datetime} - Close: {close}, Cumulative Volume: {cumsum_vol}, Cumulative"
             f" High: {cumsum_high}, Cumulative Low: {cumsum_low}"
             f" Cumulative Open: {cumsum_open}, Cumulative Close: {cumsum_close}"
+            f" Daily High: {daily_high}, Daily Low: {daily_low}"
         )
 
         assert pd.notna(cumsum_vol)
@@ -131,6 +85,10 @@ class TestStrategy(bt.Strategy):
         assert pd.notna(cumsum_low)
         assert pd.notna(cumsum_open)
         assert pd.notna(cumsum_close)
+
+        assert pd.notna(daily_high)
+        assert pd.notna(daily_low)
+
         assert pd.notna(open)
         assert pd.notna(high)
         assert pd.notna(low)
@@ -142,6 +100,9 @@ def test_cumulative_pandas_data():
     global data
     df = pd.DataFrame(data)
     df.set_index("datetime", inplace=True)
+    df = set_cumulative_data(df)
+    df = set_daily_high_low(df)
+
     data = PandasData(dataname=df)
     cerebro = bt.Cerebro()
     # cerebro.adddata(data)
@@ -150,3 +111,24 @@ def test_cumulative_pandas_data():
 
     cerebro.addstrategy(TestStrategy)
     cerebro.run()
+
+
+def set_cumulative_data(df):
+    date_groups = df.groupby(df.index.date)
+
+    df["cumulativevolume"] = date_groups["volume"].cumsum()
+    df["cumulativeopen"] = date_groups["open"].cumsum()
+    df["cumulativeclose"] = date_groups["close"].cumsum()
+    df["cumulativehigh"] = date_groups["high"].cummax()
+    df["cumulativelow"] = date_groups["low"].cummin()
+
+    return df
+
+
+def set_daily_high_low(df):
+    date_groups = df.groupby(df.index.date)
+
+    df["dailyhigh"] = date_groups["high"].transform(lambda x: x.cummax())
+    df["dailylow"] = date_groups["low"].transform(lambda x: x.cummin())
+
+    return df

@@ -398,6 +398,8 @@ class DataAccessor(LineIterator):
     PriceCumulativeHigh = DataSeries.CumulativeHigh
     PriceCumulativeOpen = DataSeries.CumulativeOpen
     PriceCumulativeVolume = DataSeries.CumulativeVolume
+    PriceDailyHigh = DataSeries.DailyHigh
+    PriceDailyLow = DataSeries.DailyLow
 
 
 class IndicatorBase(DataAccessor):

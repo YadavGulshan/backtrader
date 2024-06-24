@@ -87,7 +87,9 @@ class DataSeries(LineSeries):
         CumulativeHigh,
         CumulativeOpen,
         CumulativeVolume,
-    ) = range(12)
+        DailyHigh,
+        DailyLow,
+    ) = range(14)
 
     LineOrder = [
         DateTime,
@@ -102,6 +104,8 @@ class DataSeries(LineSeries):
         CumulativeHigh,
         CumulativeLow,
         CumulativeVolume,
+        DailyHigh,
+        DailyLow,
     ]
 
     def getwriterheaders(self):
@@ -150,34 +154,16 @@ class OHLCDateTime(OHLC):
     lines = ("datetime",)
 
 
-class CumulativeOHLC(OHLCDateTime):
+class ExtendedOHLC(OHLCDateTime):
     lines = (
         "cumulativeclose",
         "cumulativelow",
         "cumulativehigh",
         "cumulativeopen",
         "cumulativevolume",
+        "dailyhigh",
+        "dailylow",
     )
-
-
-class ExtendedOHLC(OHLCDateTime):
-    lines = (
-        "yesterday",
-        "day_high",
-        "day_low",
-        "week_high",
-        "week_low",
-        "month_high",
-        "month_low",
-        "year_high",
-        "year_low",
-        "all_time_high",
-        "all_time_low",
-    )
-
-
-class ExtendedCumulativeOHLC(CumulativeOHLC, ExtendedOHLC):
-    pass
 
 
 class SimpleFilterWrapper(object):
@@ -249,6 +235,8 @@ class _Bar(AutoOrderedDict):
         self.cumulativehigh = float("-inf")
         self.cumulativeopen = float("NaN")
         self.cumulativevolume = 0.0
+        self.dailyhigh = float("-inf")
+        self.dailylow = float("inf")
 
     def isopen(self):
         """Returns if a bar has already been updated
@@ -283,6 +271,8 @@ class _Bar(AutoOrderedDict):
             self.cumulativeclose = data.cumulativeclose[0]
             self.cumulativeopen = data.cumulativeopen[0]
             self.cumulativevolume = data.cumulativevolume[0]
+            self.dailyhigh = data.dailyhigh[0]
+            self.dailylow = data.dailylow[0]
         except Exception as e:
             print(f"_Bar.bupdate: {e}")
 

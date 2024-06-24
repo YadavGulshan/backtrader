@@ -153,6 +153,8 @@ class PandasData(feed.DataBase):
         ("cumulativelow", -1),
         ("cumulativeclose", -1),
         ("cumulativevolume", -1),
+        ("dailyhigh", -1),
+        ("dailylow", -1),
     )
 
     datafields = [
@@ -168,6 +170,8 @@ class PandasData(feed.DataBase):
         "cumulativelow",
         "cumulativeclose",
         "cumulativevolume",
+        "dailyhigh",
+        "dailylow",
     ]
 
     def __init__(self):
